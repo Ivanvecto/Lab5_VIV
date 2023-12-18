@@ -1,0 +1,82 @@
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using NUnit.Framework;
+
+public class SimpleCalculatorPage
+{
+    private IWebDriver driver;
+
+    // Локаторы
+    private By firstNumberLocator = By.CssSelector("#number1Field");
+    private By secondNumberLocator = By.CssSelector("#number2Field");
+    private By operationLocator = By.CssSelector("#selectOperationDropdown");
+    private By getTotalLocator = By.CssSelector("#gobutton");
+    private By resultLocator = By.CssSelector("#numberAnswerField");
+    private By clearButtonLocator = By.CssSelector("#clearButton");
+    private By resetButtonLocator = By.CssSelector("#resetButton");
+
+    public SimpleCalculatorPage(IWebDriver driver)
+    {
+        this.driver = driver;
+    }
+
+    // Методы для взаимодействия с элементами
+    public void EnterFirstNumber(string firstNum)
+    {
+        driver.FindElement(firstNumberLocator).SendKeys(firstNum);
+    }
+
+    public void EnterSecondNumber(string secondNum)
+    {
+        driver.FindElement(secondNumberLocator).SendKeys(secondNum);
+    }
+
+    public void SelectOperation(string operation)
+    {
+        var selectElement = driver.FindElement(operationLocator);
+        var option = selectElement.FindElements(By.TagName("option")).FirstOrDefault(opt => opt.Text == operation);
+        option?.Click();
+    }
+
+    public void ClickGetTotal()
+    {
+        driver.FindElement(getTotalLocator).Click();
+    }
+
+    public string GetResult()
+    {
+        return driver.FindElement(resultLocator).GetAttribute("value");
+    }
+
+    public void ClickClearButton()
+    {
+        driver.FindElement(clearButtonLocator).Click();
+    }
+
+    public void ClickResetButton()
+    {
+        driver.FindElement(resetButtonLocator).Click();
+    }
+
+    public bool IsResultFocused()
+    {
+        return driver.SwitchTo().ActiveElement().Equals(driver.FindElement(resultLocator));
+    }
+
+    public bool AreFieldsEmpty()
+    {
+        return string.IsNullOrEmpty(driver.FindElement(firstNumberLocator).GetAttribute("value")) &&
+               string.IsNullOrEmpty(driver.FindElement(secondNumberLocator).GetAttribute("value"));
+    }
+
+    public bool IsMobileView()
+    {
+        return driver.Manage().Window.Size.Width < 768;
+    }
+
+    public bool IsLayoutResponsive()
+    {
+        // Предположим, что мы считаем макет адаптивным, если его ширина менее 1000 пикселей
+        return driver.Manage().Window.Size.Width < 1000;
+    }
+}
