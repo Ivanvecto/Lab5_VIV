@@ -1,0 +1,121 @@
+[TestFixture]
+public class CalculatorTests
+{
+    private IWebDriver driver;
+    private SimpleCalculatorPage calculatorPage;
+
+    [SetUp]
+    public void SetUp()
+    {
+        driver = new ChromeDriver();
+        driver.Navigate().GoToUrl("https://www.globalsqa.com/angularJs-protractor/SimpleCalculator/");
+        calculatorPage = new SimpleCalculatorPage(driver);
+    }
+
+    [Test]
+    public void TestResultFocus()
+    {
+        calculatorPage.ClickGetTotal();
+        Assert.IsTrue(calculatorPage.IsResultFocused());
+    }
+
+    [Test]
+    public void TestResultClearing()
+    {
+        calculatorPage.EnterFirstNumber("10");
+        calculatorPage.ClickGetTotal();
+        calculatorPage.ClickClearButton();
+        Assert.AreEqual("", calculatorPage.GetResult());
+    }
+
+    [Test]
+    public void TestTextInput()
+    {
+        calculatorPage.EnterFirstNumber("Hello");
+        Assert.AreEqual("0", calculatorPage.GetResult());
+    }
+
+    [Test]
+    public void TestLargeNumbers()
+    {
+        calculatorPage.EnterFirstNumber("999999999");
+        calculatorPage.ClickGetTotal();
+        Assert.AreEqual("Result", calculatorPage.GetResult());
+    }
+
+    [Test]
+    public void TestNegativeNumbers()
+    {
+        calculatorPage.EnterFirstNumber("-5");
+        calculatorPage.ClickGetTotal();
+        Assert.AreEqual("Result", calculatorPage.GetResult());
+    }
+
+    [Test]
+    public void TestDivisionByZero()
+    {
+        calculatorPage.EnterFirstNumber("10");
+        calculatorPage.EnterSecondNumber("0");
+        calculatorPage.SelectOperation("DIVISION");
+        calculatorPage.ClickGetTotal();
+        Assert.AreEqual("Error", calculatorPage.GetResult());
+    }
+
+    [Test]
+    public void TestClearFields()
+    {
+        calculatorPage.EnterFirstNumber("5");
+        calculatorPage.SelectOperation("+");
+        calculatorPage.EnterSecondNumber("3");
+        calculatorPage.ClickClearButton();
+        Assert.IsTrue(calculatorPage.AreFieldsEmpty());
+    }
+
+    [Test]
+    public void TestPercentageCalculation()
+    {
+        calculatorPage.EnterFirstNumber("50");
+        calculatorPage.SelectOperation("%");
+        calculatorPage.ClickGetTotal();
+        Assert.AreEqual("Result", calculatorPage.GetResult());
+    }
+
+    [Test]
+    public void TestReset()
+    {
+        calculatorPage.EnterFirstNumber("8");
+        calculatorPage.SelectOperation("*");
+        calculatorPage.EnterSecondNumber("2");
+        calculatorPage.ClickResetButton();
+        Assert.AreEqual("0", calculatorPage.GetResult());
+    }
+
+    [Test]
+    public void TestFloatAddition()
+    {
+        calculatorPage.EnterFirstNumber("3.5");
+        calculatorPage.SelectOperation("+");
+        calculatorPage.EnterSecondNumber("2.7");
+        calculatorPage.ClickGetTotal();
+        Assert.AreEqual("Result", calculatorPage.GetResult());
+    }
+
+    [Test]
+    public void TestMobileView()
+    {
+        Assert.IsTrue(calculatorPage.IsMobileView());
+    }
+
+    [Test]
+    public void TestLayoutResizing()
+    {
+        Browser.ResizeWindow(driver, 800, 600);
+        Assert.IsTrue(calculatorPage.IsLayoutResponsive());
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        driver.Quit();
+    }
+}
